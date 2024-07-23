@@ -1,0 +1,62 @@
+.data
+pula: .string "\n"
+sim: .string "sim"
+nao: .string "nao"
+inv: .string "Entrada invalida."
+
+.text
+# capturar o número do usuário
+li a7, 5
+ecall
+# t1 vai conter o valor do número
+mv t0, a0
+#----------------------------
+#compara para ver se o número é menor ou igual a zero para entrar na tag de inválida
+
+#---------------------------------------------------------------
+#verifica se o número difitado for 1 e se for manda ele para a área de não primos
+li s0,1
+blt t0,s0,invalido
+#----------------------------------------------------------------
+#fará a primeira comparação imediata para saber se o númreo é primo
+addi t5,zero,1
+beq t0,t5,nprimo
+li t5,2
+ble,t0,t5,sprimo
+li t4,2
+
+#-------------------------------------------------------------------------
+#fará divisões sucessivas com 2 e analisará o resto para saber se o número é primo ou não
+divisoes:
+bgt t4, t0, sprimo
+rem t3, t0, t4
+beqz t3, nprimo
+addi t4, t4, 1
+j sprimo
+ #---------------------------------------------------------------------------   
+invalido:
+li a7,4
+la a0,inv
+ecall
+j fim  
+
+nprimo:
+li a7, 4
+la a0, nao
+ecall
+j fim
+
+sprimo:
+li a7, 4
+la a0, sim
+ecall
+j fim
+#------------------------------------------------------------------------
+fim:
+li a7, 4
+la a0, pula
+ecall
+
+li a7, 10
+li a0, 0
+ecall

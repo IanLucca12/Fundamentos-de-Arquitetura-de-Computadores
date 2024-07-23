@@ -1,0 +1,55 @@
+ .data
+inv: .asciz "Entrada invalida."
+nao: .asciz "nao"
+sim: .asciz "sim"
+pula: .asciz "\n"
+
+.text
+
+main:
+    li a7, 5 
+    ecall
+    mv t6, a0 
+
+    addi s1, zero, 1
+    blt t6, s1, invalido 
+
+    addi t0, zero, 1
+    beq t6, t0, nprimo
+    li t0, 2
+    ble t6, t0, sprimo
+    
+    li t4, 2 
+    
+
+divisoes:
+    bgt t4, s0, sprimo 
+    rem t3, s0, t4  
+    beqz t3, nprimo   
+    addi t4, t4, 1 
+    jal sprimo 
+
+invalido:
+    li a7, 4
+    la a0, inv
+    ecall
+    j fim
+
+nprimo:
+    li a7, 4
+    la a0, nao
+    ecall
+    j fim
+
+sprimo:
+    li a7, 4
+    la a0, sim
+    ecall
+    j fim
+
+fim:
+    li a7, 4
+    la a0, pula
+    ecall
+    
+    li a7, 10

@@ -1,0 +1,71 @@
+.data
+pula: .string "\n"
+acertos: .word 0
+gabarito: .space 100
+resposta: .space 100
+
+.text
+li t5,1 #subtrai do resultado
+
+li a7, 5
+ecall 
+mv a1, a0    # a1 contém o número de questões
+
+li a7, 8
+la a0, gabarito   # aponta para o início da string do gabarito
+li a1, 100        # comprimento máximo da string
+ecall
+
+li a7, 8
+la  a0, resposta    # aponta para o início da string das respostas
+li a1, 100          # comprimento máximo da string
+ecall
+
+#---------------------------------------------------------------------------------------------------------------
+
+li t2, 0            # Inicializa o índice para percorrer as strings
+li t3, 0            # Inicializa o contador de acertos
+la t0, gabarito     # Inicializa o ponteiro para o gabarito
+la t1, resposta     # Inicializa o ponteiro para as respostas
+
+lerespostas:
+    lbu a2, 0(t0)        # Carrega o próximo caractere do gabarito em a2
+    lbu a3, 0(t1)             # Carrega o próximo caractere das respostas do candidato em a3
+    beq a2, zero, finalstring   # Se a2, a string do gabarito, chegar a 0 
+    beq a3, zero, finalstring   # Se a3, string das respostas, chegar a 0
+    
+    # uma dica pro loop funcionar melhor é q o ideal seria se vc utilizasse como condição de parada o primeiro numero q vc leu, no seu caso o a1
+    # ai, ao inves de vc usar o beq, vc poderia usar o beq e ir decrementando o a1 a cada iteração
+    
+    addi t0, t0, 1
+    addi t1, t1, 1
+    
+    beq a2, a3, acerto   # Se as respostas forem iguais, pula para a etiqueta acerto
+    
+    #o unico problema desse codigo aqui é q vc ta lendo o tempo inteiro o mesmo caracter.
+    # pra q ele funciona mesmo, basta vc somar o valor de t0 e t1 com 1 (pq cada caracter eh 1 byte) e ele vai pro prox caracter
+    
+    j lerespostas        # Se as respostas não forem iguais, verifica a próxima resposta
+
+acerto:
+    addi t3, t3, 1    # Incrementa o contador de acertos
+    j lerespostas     # Verifica a próxima resposta
+
+
+#-----------------------------------------------------------------------------------------------------------------
+finalstring:
+
+sub t3,t3,t5
+# Exibir número de acertos
+li a7, 1  
+mv a0, t3 
+ecall
+
+# Imprimir nova linha
+li a7, 4  
+la a0, pula
+ecall
+
+# Encerrar o programa
+li a7, 10 
+ecall

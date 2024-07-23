@@ -1,0 +1,34 @@
+ .data
+ num1:  #Número 1
+ num2:  #Número 2
+ resultado: #Resultado
+ 
+ #Precisa ler o primeiro número
+ .text
+ li a7 , 4    # Irá imprimir a string vazia que corresponde ao número 1
+ la a0, num1  # Endereço da string do número 1 pro a0
+ 
+ li a7, 5     # Irá ler o valor da string como um inteiro e por default o valor desse número irá pro registrador a0
+ ecall
+ 
+ mv t0, a0  #vai mover o valor do inteiro do número para o registrador t0
+ 
+ #Precisa ler o segundo número
+ li a7 , 4   # Irá imprimir a string vazia que corresponde ao número 2
+ la a0, num2  # Endereço da string do número 2 pro a0
+ 
+ li a7, 5  # Irá ler o valor da string como um inteiro e por default o valor desse número irá pro registrador a0
+ ecall
+ 
+ mv t1, a0  #vai mover o valor do inteiro do número para o registrador t1
+ 
+ #soma 
+ add t2,t0,t1 # soma os valores nos registradores t0 e t1 e salva no t2
+ 
+ li a7 , 4  # Irá imprimir a string vazia que corresponde ao resultado
+ la a0, resultado # Endereço da string do resultado pro a0
+ ecall
+ 
+ li a7,1 # Irá printar na tela o valor do inteiro do resultado
+ mv a0,t2 # move o valor do resultado contido em t2 pro registrador a0
+ ecall

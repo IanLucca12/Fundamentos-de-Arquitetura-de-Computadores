@@ -1,0 +1,131 @@
+.data
+quebra: .asciz "\n"  # newline character
+str1: .space 1024
+comando: .space 1024
+.text
+main:
+    # Lê string comando
+    li a7, 8
+    la a0, comando
+    li a1, 1024
+    ecall
+    # Lê tamanho string
+    li a7, 5
+    ecall
+    mv t0, a0
+    # Lê string
+    li a7, 8
+    la a0, str1
+    li a1, 1024
+    ecall
+    # Carrega endereço strings
+    la a0, comando
+    la a1, str1
+    # Verifica comando
+    lbu t2, 0(a0)
+    addi t4, zero, 77  # Verifica 'M'
+    beq t2, t4, trans_maiuscula
+    addi t4, zero, -77
+    # Verifica 'm'
+    addi t4, zero, 109
+    beq t2, t4, trans_minuscula
+    addi t4, zero, -109
+  # Verifica 'c'
+    addi t4, zero, 99
+    beq t2, t4, trans_capitalize_primeiro
+    addi t4, zero, -99
+trans_capitalize_primeiro:
+    lbu t3, 0(a1)
+    beq t0, zero, print_result
+    addi t0, t0, -1
+    addi t6, zero, 90
+    ble t3, t6, next_char_capitalize
+    # Converte caractere minúsculo para maiúsculo
+    addi t3, t3, -32
+    sb t3, 0(a1)  # Atualiza o caractere na string modificada
+    j next_char_capitalize
+    
+    
+trans_capitalize:
+# Carrega caractere da string
+    lbu t3, 0(a1)
+    beq t0, zero, print_result
+    addi t0, t0, -1
+    addi t6, zero, 32	
+    beq  t3,t6, espaco  #se nao for continua iterando
+    j next_char_capitalize
+    
+espaco: 
+    sb t3, 0(a1)  # Atualiza o caractere na string modificada
+    addi a1, a1, 1  # Próximo caractere da string
+    
+    lbu t3, 0(a1)
+    
+    beq t0, zero, print_result
+    addi t0, t0, -1
+    
+    addi t6, zero, 90
+    ble t3, t6, next_char_capitalize #já é maiusculo
+    
+    addi t3, t3, -32
+    
+    j next_char_capitalize
+next_char_capitalize:
+    sb t3, 0(a1)  # Atualiza o caractere na string modificada
+    addi a1, a1, 1  # Próximo caractere da string
+    j trans_capitalize
+    
+trans_maiuscula:
+    # Carrega caractere da string
+    lbu t3, 0(a1)
+    beq t0, zero, print_result
+    addi t0, t0, -1
+    addi t6, zero, 122 
+    ble t3, t6, trans_maiuscula_especial #se seguir é menor que 90
+    j next_char_maiusculo
+    
+trans_maiuscula_especial:
+    addi t6,zero, 97
+    bge t3,t6, transforma_maiusculo_minusculo    
+    j next_char_maiusculo
+    
+transforma_maiusculo_minusculo:
+        # Converte caractere minúsculo para maiúsculo
+    addi t3, t3, -32
+    j next_char_maiusculo    
+trans_minuscula:
+    # Carrega caractere da string
+    lbu t3, 0(a1)
+    beq t0, zero, print_result
+    addi t0, t0, -1
+    
+    addi t6, zero, 65
+    bge t3, t6, trans_minuscula_especial
+    j next_char_minusculo
+    
+trans_minuscula_especial: 
+    addi t6, zero, 90
+    ble t3,t6 transforma_minusculo_maiusculo
+    j next_char_minusculo
+transforma_minusculo_maiusculo:
+    addi t3,t3,32
+    j next_char_minusculo
+next_char_minusculo:
+    sb t3, 0(a1)  # Atualiza o caractere na string modificada
+    addi a1, a1, 1  # Próximo caractere da string
+    j trans_minuscula
+next_char_maiusculo:
+    sb t3, 0(a1)  # Atualiza o caractere na string modificada
+    addi a1, a1, 1  # Próximo caractere da string
+    j trans_maiuscula
+    
+print_result:
+    la a0, str1  # Endereço da string modificada
+    li a7, 4    # System call number for print_str
+    ecall
+    la a0, quebra
+    li a7, 4    # System call number for print_str
+    ecall
+    li a7, 10           # System call number for exit
+    li a0, 0            # Exit code 0
+    ecall

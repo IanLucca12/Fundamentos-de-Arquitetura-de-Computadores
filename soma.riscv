@@ -1,0 +1,19 @@
+.data 
+str: .ascii "\n"
+
+.text
+li a7, 5
+ecall
+
+mv t0,a0
+ecall
+
+add t1,a0,t0
+
+li a7,1 
+mv a0,t1
+ecall
+
+li a7, 4
+la a0 , str
+ecall
